@@ -1,4 +1,5 @@
 package edu.temple.cis.c3238.banksim;
+import java.util.concurrent.*;
 
 /**
  * @author Cay Horstmann
@@ -10,34 +11,68 @@ public class Account {
     private volatile int balance;
     private final int id;
     private final Bank myBank;
+    private static Semaphore mutex;
 
     public Account(Bank myBank, int id, int initialBalance) {
         this.myBank = myBank;
         this.id = id;
         balance = initialBalance;
+        mutex = new Semaphore(1);
     }
 
     public int getBalance() {
         return balance;
     }
 
+    
     public boolean withdraw(int amount) {
-        if (amount <= balance) {
-            int currentBalance = balance;
-//            Thread.yield(); // Try to force collision
-            int newBalance = currentBalance - amount;
-            balance = newBalance;
-            return true;
-        } else {
-            return false;
+        boolean ret = false;
+        synchronized(this)
+        {
+        try{
+            mutex.acquire();
+            try{
+            
+                if (amount <= balance) {
+                    int currentBalance = balance;
+        //            Thread.yield(); // Try to force collision
+                    int newBalance = currentBalance - amount;
+                    balance = newBalance;
+                    ret = true;
+                } else {
+                    ret = false;
+                }
+            }
+            finally{
+                mutex.release();
+            }
         }
+        catch(InterruptedException e) {
+
+            e.printStackTrace();
+        }
+        }
+        return ret;
     }
 
     public void deposit(int amount) {
-        int currentBalance = balance;
-//        Thread.yield();   // Try to force collision
-        int newBalance = currentBalance + amount;
-        balance = newBalance;
+        try{
+            mutex.acquire();
+            try{
+                int currentBalance = balance;
+                //Thread.yield();   // Try to force collision
+                int newBalance = currentBalance + amount;
+                balance = newBalance;
+            }
+            finally{
+                mutex.release();
+            }
+        }
+        catch(InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+
     }
     
     @Override
