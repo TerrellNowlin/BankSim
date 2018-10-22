@@ -33,7 +33,7 @@ public class Bank {
     }
 
     public void test() {
-        synchronized(this)
+        synchronized(Account.class)
         {
             int sum = 0;
             for (Account account : accounts) {
