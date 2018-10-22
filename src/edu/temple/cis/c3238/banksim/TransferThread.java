@@ -4,7 +4,7 @@ package edu.temple.cis.c3238.banksim;
  * @author Modified by Paul Wolfgang
  * @author Modified by Charles Wang
  */
-class TransferThread extends Thread {
+class TransferThread implements Runnable {
 
     private final Bank bank;
     private final int fromAccount;

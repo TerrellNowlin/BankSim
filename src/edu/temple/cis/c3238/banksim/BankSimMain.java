@@ -12,11 +12,12 @@ public class BankSimMain {
 
     public static void main(String[] args) {
         Bank b = new Bank(NACCOUNTS, INITIAL_BALANCE);
-        Thread[] threads = new Thread[NACCOUNTS];
+        TransferThread[] threads = new TransferThread[NACCOUNTS];
         // Start a thread for each account
         for (int i = 0; i < NACCOUNTS; i++) {
             threads[i] = new TransferThread(b, i, INITIAL_BALANCE);
-            threads[i].start();
+            Thread t= new Thread(threads[i]);
+            t.start();
         }
 
 //        b.test();

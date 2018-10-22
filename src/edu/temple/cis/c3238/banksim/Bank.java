@@ -59,7 +59,7 @@ public class Bank {
     }
     
     
-    public boolean shouldTest() {
+    public synchronized boolean shouldTest() {
         return ++ntransacts % NTEST == 0;
     }
 
